@@ -18,7 +18,7 @@ public class Factorize implements Runnable {
     static BigInteger factor2;
 
     static int threads;
-
+   static long start;
     private Object lock = new Object();
     // private Lock lock = new ReentrantLock();
     Thread[] threadArray;
@@ -41,12 +41,16 @@ public class Factorize implements Runnable {
                 factor1 = number;
                 factor2 = product.divide(factor1);
 
-                System.out.println("true" + " " + factor1 + " " + factor2 + " " + Thread.currentThread().getName());
+                // System.out.println("true" + " " + factor1 + " " + factor2 + " " + Thread.currentThread().getName());
+                long stop = System.nanoTime();
+
+                System.out.println("true" + " " + factor1 + " " + factor2 + " Time: " + (stop - start) / 1.0E9);
+    
                 return;
 
             }
         }
-            System.out.println(number + " " + Thread.currentThread().getName());
+            // System.out.println(number + " " + Thread.currentThread().getName());
          
                 number = number.add(step);
             
@@ -66,14 +70,14 @@ public class Factorize implements Runnable {
             for (int i = 0; i < threads; i++) {
                 factorizer[i] = new Factorize(BigInteger.valueOf(i + MIN), product, BigInteger.valueOf(threads));
 
-                System.out.println(factorizer[i].min.longValue() + " " + factorizer[i].max.longValue() + " "
-                        + factorizer[i].step.longValue());
+                // System.out.println(factorizer[i].min.longValue() + " " + factorizer[i].max.longValue() + " "
+                //         + factorizer[i].step.longValue());
 
                 threadArray[i] = new Thread(factorizer[i]);
 
             }
 
-            long start = System.nanoTime();
+            start = System.nanoTime();
 
             for (int i = 0; i < threads; i++) {
                 threadArray[i].start();
@@ -86,9 +90,6 @@ public class Factorize implements Runnable {
 
             // StartAndJoinThreads(threadArray);
 
-            long stop = System.nanoTime();
-
-            System.out.println("true" + " " + factor1 + " " + factor2 + " Time: " + (stop - start) / 1.0E9);
 
         } catch (Exception e) {
             System.out.println(e);
