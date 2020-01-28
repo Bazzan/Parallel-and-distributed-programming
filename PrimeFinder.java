@@ -1,5 +1,4 @@
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.util.Scanner;
 
 class PrimeFinder implements Runnable {
     private final static long MIN = 1;
@@ -37,10 +36,11 @@ class PrimeFinder implements Runnable {
     public static void main(String[] args) {
         try {
             // Read input.
-            InputStreamReader streamReader = new InputStreamReader(System.in);
-            BufferedReader consoleReader = new BufferedReader(streamReader);
+            Scanner scan = new Scanner(System.in);
+
             System.out.print("Input (numThreads)>");
-            String input = consoleReader.readLine();
+            // String input = consoleReader.readLine();
+            String input = scan.nextLine();
             int numThreads = Integer.parseInt(input);
 
             // Start timing.

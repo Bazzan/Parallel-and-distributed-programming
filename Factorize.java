@@ -35,7 +35,7 @@ public class Factorize implements Runnable {
 
         BigInteger number = min;
 
-        while (number.compareTo(max) < 0) {
+        while (number.compareTo(max.sqrt()) <= 0) {
             synchronized (this) {
             if (product.remainder(number).compareTo(BigInteger.ZERO) == 0) {
                 factor1 = number;
@@ -70,8 +70,8 @@ public class Factorize implements Runnable {
             for (int i = 0; i < threads; i++) {
                 factorizer[i] = new Factorize(BigInteger.valueOf(i + MIN), product, BigInteger.valueOf(threads));
 
-                // System.out.println(factorizer[i].min.longValue() + " " + factorizer[i].max.longValue() + " "
-                //         + factorizer[i].step.longValue());
+                System.out.println(factorizer[i].min.longValue() + " " + factorizer[i].max.longValue() + " "
+                        + factorizer[i].step.longValue());
 
                 threadArray[i] = new Thread(factorizer[i]);
 
