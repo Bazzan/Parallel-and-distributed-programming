@@ -1,8 +1,8 @@
-import java.awt.EventQueue;
+// import java.awt.EventQueue;
 import java.math.BigInteger;
 import java.util.Scanner;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+// import java.util.concurrent.locks.Lock;
+// import java.util.concurrent.locks.ReentrantLock;
 
 public class Factorize implements Runnable {
 
@@ -19,7 +19,7 @@ public class Factorize implements Runnable {
     static BigInteger factor2;
 
     static int threads;
-    private Object lock = new Object();
+    // private Object lock = new Object();
     // private Lock lock = new ReentrantLock();
     Thread[] threadArray;
 

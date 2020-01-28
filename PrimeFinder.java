@@ -42,7 +42,7 @@ class PrimeFinder implements Runnable {
             // String input = consoleReader.readLine();
             String input = scan.nextLine();
             int numThreads = Integer.parseInt(input);
-
+            scan.close();
             // Start timing.
             long start = System.nanoTime();
 
