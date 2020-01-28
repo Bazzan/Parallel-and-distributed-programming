@@ -9,8 +9,9 @@ public class Factorize implements Runnable {
     private final static long MIN = 2;
     BigInteger min;
     BigInteger max;
-    static BigInteger step;
+    BigInteger step;
     public boolean running;
+    BigInteger number;
 
     static BigInteger product;
 
@@ -18,7 +19,6 @@ public class Factorize implements Runnable {
     static BigInteger factor2;
 
     static int threads;
-   static long start;
     private Object lock = new Object();
     // private Lock lock = new ReentrantLock();
     Thread[] threadArray;
@@ -29,31 +29,34 @@ public class Factorize implements Runnable {
         this.max = max;
         this.step = step;
 
+    }       
+
+    private synchronized BigInteger getNumber(){
+        return number;
+    }
+
+    private synchronized BigInteger setNumber(BigInteger step){
+        return number = number.add(step);
     }
 
     public void run() {
 
-        BigInteger number = min;
+        number = min;
 
         while (number.compareTo(max.sqrt()) <= 0) {
-            synchronized (this) {
-            if (product.remainder(number).compareTo(BigInteger.ZERO) == 0) {
+            if (product.remainder(getNumber()).compareTo(BigInteger.ZERO) == 0) {
                 factor1 = number;
                 factor2 = product.divide(factor1);
 
-                // System.out.println("true" + " " + factor1 + " " + factor2 + " " + Thread.currentThread().getName());
-                long stop = System.nanoTime();
 
-                System.out.println("true" + " " + factor1 + " " + factor2 + " Time: " + (stop - start) / 1.0E9);
     
                 return;
 
             }
-        }
-            // System.out.println(number + " " + Thread.currentThread().getName());
-         
-                number = number.add(step);
-            
+        
+            setNumber(step);
+
+        
         }
 
     }
@@ -61,7 +64,6 @@ public class Factorize implements Runnable {
     public static void main(String[] args) {
         try {
 
-            System.out.println("number of corse available: " + Runtime.getRuntime().availableProcessors());
             GetInputs();
 
             Thread[] threadArray = new Thread[threads];
@@ -77,7 +79,7 @@ public class Factorize implements Runnable {
 
             }
 
-            start = System.nanoTime();
+            long start = System.nanoTime();
 
             for (int i = 0; i < threads; i++) {
                 threadArray[i].start();
@@ -88,8 +90,9 @@ public class Factorize implements Runnable {
                 threadArray[i].join();
             }
 
-            // StartAndJoinThreads(threadArray);
 
+            long stop = System.nanoTime();
+            System.out.println("true" + " " + factor1 + " " + factor2 + " Time: " + (stop - start) / 1.0E9);
 
         } catch (Exception e) {
             System.out.println(e);
@@ -97,10 +100,7 @@ public class Factorize implements Runnable {
 
     }
 
-    // private static void StartAndJoinThreads(Thread[] threadArray) throws
-    // InterruptedException {
 
-    // }
 
     private static void GetInputs() {
 
@@ -115,7 +115,8 @@ public class Factorize implements Runnable {
         product = firstPrime.multiply(secondPrime);
 
         System.out.println(product);
-
+        
+        System.out.println("number of corse available: " + Runtime.getRuntime().availableProcessors());
         System.out.println("How meny threads?");
         threads = scan.nextInt();
         scan.close();
