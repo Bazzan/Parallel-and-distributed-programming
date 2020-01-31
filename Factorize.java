@@ -11,8 +11,10 @@ public class Factorize implements Runnable {
     BigInteger max;
     BigInteger step;
     public boolean running;
-    BigInteger number;
+    // BigInteger number;
 
+    static boolean alive = true;
+    static long start;
     static BigInteger product;
 
     static BigInteger factor1;
@@ -31,30 +33,34 @@ public class Factorize implements Runnable {
 
     }       
 
-    private synchronized BigInteger getNumber(){
-        return number;
-    }
+    // private synchronized BigInteger getNumber(){
+    //     return number;
+    // }
 
-    private synchronized BigInteger setNumber(BigInteger step){
-        return number = number.add(step);
-    }
+    // private synchronized BigInteger setNumber(BigInteger step){
+    //     return number = number.add(step);
+    // }
 
     public void run() {
 
-        number = min;
+        BigInteger number = min;
 
-        while (number.compareTo(max.sqrt()) <= 0) {
-            if (product.remainder(getNumber()).compareTo(BigInteger.ZERO) == 0) {
+        while (number.compareTo(max) <= 0 && alive == true) {
+            if (product.remainder(number).compareTo(BigInteger.ZERO) == 0) {
                 factor1 = number;
                 factor2 = product.divide(factor1);
 
-
+                alive = false;
+                
+                long stop = System.nanoTime();
+                System.out.println("true" + " " + factor1 + " " + factor2 + " Time: " + (stop - start) / 1.0E9);
     
                 return;
 
             }
-        
-            setNumber(step);
+            
+            number = number.add(step);
+            // setNumber(step);
 
         
         }
@@ -79,7 +85,7 @@ public class Factorize implements Runnable {
 
             }
 
-            long start = System.nanoTime();
+            start = System.nanoTime();
 
             for (int i = 0; i < threads; i++) {
                 threadArray[i].start();
@@ -91,8 +97,6 @@ public class Factorize implements Runnable {
             }
 
 
-            long stop = System.nanoTime();
-            System.out.println("true" + " " + factor1 + " " + factor2 + " Time: " + (stop - start) / 1.0E9);
 
         } catch (Exception e) {
             System.out.println(e);
