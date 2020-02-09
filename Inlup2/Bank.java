@@ -1,7 +1,6 @@
 // Peter Idestam-Almquist, 2019-02-04.
 
 import java.util.List;
-import java.util.Random;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.locks.Lock;
@@ -11,13 +10,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 class Bank {
 	// Instance variables.
 	private final List<Account> accounts = new ArrayList<Account>();
-	private ReentrantLock readLock = new ReentrantLock();
-	private ReentrantLock writeLock = new ReentrantLock();
-
-	private ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 	private List<ReentrantLock> lockArray = new ArrayList<ReentrantLock>();
 	private static boolean initLockList = false;
-	private Random rnd = new Random();
 
 	// Instance methods.
 
@@ -93,9 +87,9 @@ class Bank {
 
 	}
 
-	// Denna metod är Synchronized för att vi vill vänta på att alla låsen är
-	// skapade innan vi säkert kan börja utföra alla operationer och transaktioner.
-	// Efter att
+	// Denna metod är Synchronized för att vi vill vara säkra på att vi får rätt
+	// mängd antal lås, innan vi säkert kan börja utföra alla operationer och
+	// transaktioner.
 	synchronized private void initiateLockArray() {
 		if (initLockList == false) {
 
@@ -105,7 +99,7 @@ class Bank {
 				lockArray.add(lock);
 
 			}
-			System.out.println(lockArray.size());
+			System.out.println("Array of locks for each account, number of locks: " + lockArray.size());
 
 		}
 	}
