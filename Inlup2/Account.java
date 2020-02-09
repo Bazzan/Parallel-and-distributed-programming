@@ -1,4 +1,3 @@
-// Peter Idestam-Almquist, 2018-02-21.
 
 
 class Account {
@@ -24,5 +23,6 @@ class Account {
 	
 	void setBalance(int balance) {
 		this.balance = balance;
+		// System.out.println("new balance -> id: " + id + " " + getBalance());
 	}
 }

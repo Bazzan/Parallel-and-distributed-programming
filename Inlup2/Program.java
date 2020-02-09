@@ -8,9 +8,9 @@ import java.util.concurrent.TimeUnit;
 
 public class Program {
 	// Static variables.
-	private static final int NUM_THREADS = 1;
-	private static final int NUM_ACCOUNTS = 150;
-	private static final int FACTOR = 100000;
+	private static final int NUM_THREADS = 4;
+	private static final int NUM_ACCOUNTS = 10;
+	private static final int FACTOR = 1000000;
 	private static final int TIMEOUT = 60; // Seconds;
 	private static final int NUM_TRANSACTIONS = NUM_ACCOUNTS * FACTOR;
 	private static Integer[] accountIds = new Integer[NUM_ACCOUNTS];
@@ -21,7 +21,6 @@ public class Program {
 	// Static methods.
 
 	private static void initiate() {
-		System.out.println(Runtime.getRuntime().availableProcessors());
 		for (int i = 0; i < NUM_ACCOUNTS; i++) {
 			accountIds[i] = bank.newAccount(1000);
 		}
@@ -43,14 +42,12 @@ public class Program {
 		for (int i = 0; i < NUM_TRANSACTIONS; i++) {
 			operations[i * 2] = withdrawals[i % NUM_ACCOUNTS];
 			operations[(i * 2) + 1] = deposits[(i + 1) % NUM_ACCOUNTS];
-			
 		}
 
 		try {
 			long time = System.nanoTime();
 			for (int i = 0; i < NUM_TRANSACTIONS * 2; i++) {
 				executor.execute(operations[i]);
-
 			}
 			executor.shutdown();
 			boolean completed = executor.awaitTermination(TIMEOUT, TimeUnit.SECONDS);
@@ -60,10 +57,10 @@ public class Program {
 			System.out.println("Completed: " + completed);
 			System.out.println("Time [ms]: " + time / 1000000);
 			
-			// for (int i = 0; i < NUM_ACCOUNTS; i++) {
-			// 	int balance = bank.getAccountBalance(accountIds[i]);
-			// 	System.out.println("Account: " + accountIds[i] + "; Balance: " + balance);
-			// }
+			for (int i = 0; i < NUM_ACCOUNTS; i++) {
+				int balance = bank.getAccountBalance(accountIds[i]);
+				System.out.println("Account: " + accountIds[i] + "; Balance: " + balance);
+			}
 		}
 		catch (Exception exception) {
 			exception.printStackTrace();
@@ -85,7 +82,6 @@ public class Program {
 			long time = System.nanoTime();
 			for (int i = 0; i < NUM_TRANSACTIONS; i++) {
 				executor.execute(transactions[i]);
-
 			}
 			executor.shutdown();
 			boolean completed = executor.awaitTermination(TIMEOUT, TimeUnit.SECONDS);
@@ -95,10 +91,10 @@ public class Program {
 			System.out.println("Completed: " + completed);
 			System.out.println("Time [ms]: " + time / 1000000);
 			
-			// for (int i = 0; i < NUM_ACCOUNTS; i++) {
-			// 	int balance = bank.getAccountBalance(accountIds[i]);
-			// 	System.out.println("Account: " + accountIds[i] + "; Balance: " + balance);
-			// }
+			for (int i = 0; i < NUM_ACCOUNTS; i++) {
+				int balance = bank.getAccountBalance(accountIds[i]);
+				System.out.println("Account: " + accountIds[i] + "; Balance: " + balance);
+			}
 		}
 		catch (Exception exception) {
 			exception.printStackTrace();
