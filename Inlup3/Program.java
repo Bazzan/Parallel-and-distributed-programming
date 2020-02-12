@@ -24,49 +24,103 @@ public class Program {
 	private static WebPage[] webPages = new WebPage[NUM_WEBPAGES];
 
 	private static ExecutorService threadPool = ForkJoinPool.commonPool();
-	private static BlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(40);
+	private static BlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(NUM_WEBPAGES * 3);
 	// [You are welcome to add some variables.]
 
-	static class Task {
+	abstract class Task {
+		BlockingQueue<Task> queue;
+		WebPage webPage;
 
-		public Task(WebPage webPage) {
+		class DownloadTask extends Task implements Runnable {
+
+			public DownloadTask(BlockingQueue<Task> queue) {
+				this.queue = queue;
+			}
+
+			@Override
+			public void run() {
+				queue.take().download();
+			}
+		}
+
+		class AnalyzeTask extends Task {
 
 		}
+
+		class CategorizeTask extends Task {
+
+		}
+
+		class TaskProducer extends Task implements Runnable {
+
+			TaskProducer(BlockingQueue<Task> queue) {
+				this.queue = queue;
+			}
+
+			@Override
+			public void run() {
+				for (int i = 0; i <= NUM_WEBPAGES; i++) {
+					DownloadTask dt = new DownloadTask(queue);
+					try {
+						queue.put(dt);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+			}
+		}
+
 	}
 
 	// [You are welcome to modify this method, but it should NOT be parallelized.]
 	private static void initialize() {
 		for (int i = 0; i < NUM_WEBPAGES; i++) {
-			webPages[i] = new WebPage(i, "http://www.site.se/page" + i + ".html");
+
+			WebPage webpage = new WebPage(i, "http://www.site.se/page" + i + ".html");
+			webPages[i] = webpage;
+
+			try {
+				queue.put(webpage);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
 	// [Do modify this sequential part of the program.]
 	private static void downloadWebPages() {
 		for (int i = 0; i < NUM_WEBPAGES; i++) {
-			int j= i;
-
-			Runnable runnable = () -> {
-				
-				webPages[j].download();
-			};
 			try {
-				System.out.println("download");
 
-				queue.put(runnable);
-				// webPages[i].download();
-				threadPool.submit(queue.take());
+				threadPool.execute(queue.take());
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
-			
-			//  WebPage web = queue.take();
-			//  Runnable runnable = web.download();
-			//  threadPool.execute(web.download()) 
+			// int j= i;
 
-		
+			// Runnable runnable = () -> {
+
+			// webPages[j].download();
+			// };
+			// try {
+
+			// queue.put(runnable);
+			// // webPages[i].download();
+			// threadPool.execute(queue.take());
+			// } catch (InterruptedException e) {
+			// // TODO Auto-generated catch block
+			// e.printStackTrace();
+			// }
+
+			// WebPage web = queue.take();
+			// Runnable runnable = web.download();
+			// threadPool.execute(web.download())
+
 		}
 	}
 
@@ -74,16 +128,16 @@ public class Program {
 	private static void analyzeWebPages() {
 		System.out.println("analyze");
 		for (int i = 0; i < NUM_WEBPAGES; i++) {
-			int j= i;
+			int j = i;
 			Runnable runnable = () -> {
-				
+
 				webPages[j].analyze();
 			};
 			try {
 				queue.put(runnable);
 				// webPages[i].download();
 				threadPool.submit(queue.take());
-				
+
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -95,9 +149,9 @@ public class Program {
 	private static void categorizeWebPages() {
 		for (int i = 0; i < NUM_WEBPAGES; i++) {
 
-			int j= i;
+			int j = i;
 			Runnable runnable = () -> {
-				
+
 				webPages[j].categorize();
 			};
 			try {
@@ -115,27 +169,26 @@ public class Program {
 	private static void presentResult() {
 		for (int i = 0; i < NUM_WEBPAGES; i++) {
 			System.out.println(webPages[i]);
-			
+
 		}
 	}
 
 	// private static void produce() {
-	// 	for (int i = 0; i <= webPages.length; i++) {
-	// 		try {
-	// 			// Task task = new Task(webPages[i].download());
-	// 			queue.put(-> webPage.download());
-	// 		} catch (InterruptedException e) {
-	// 			// TODO Auto-generated catch block
-	// 			e.printStackTrace();
-	// 		}
-	// 	}
+	// for (int i = 0; i <= webPages.length; i++) {
+	// try {
+	// // Task task = new Task(webPages[i].download());
+	// queue.put(-> webPage.download());
+	// } catch (InterruptedException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	// }
 	// }
 
-
 	// private static Runnable consume() {
-	// 	for (WebPage webpage : webPages) {
-	// 		threadPool.execute(queue.take()-> webPage.download());
-	// 	}
+	// for (WebPage webpage : webPages) {
+	// threadPool.execute(queue.take()-> webPage.download());
+	// }
 	// }
 
 	public static void main(String[] args) {
@@ -145,22 +198,17 @@ public class Program {
 		// Start timing.
 		long start = System.nanoTime();
 
-
-
-
 		// for (WebPage webpage : webPages) {
 
-		
-		// 	// Runnable task = () -> webpage.download();
-		// 	// try {
-		// 	// 	queue.put(task);
-		// 	// 	threadPool.execute(queue.take());
+		// // Runnable task = () -> webpage.download();
+		// // try {
+		// // queue.put(task);
+		// // threadPool.execute(queue.take());
 
-		// 	// } catch (InterruptedException e) {
-		// 	// 	// TODO Auto-generated catch block
-		// 	// 	e.printStackTrace();
-		// 	// }
-			
+		// // } catch (InterruptedException e) {
+		// // // TODO Auto-generated catch block
+		// // e.printStackTrace();
+		// // }
 
 		// }
 		// System.out.println(queue.size());

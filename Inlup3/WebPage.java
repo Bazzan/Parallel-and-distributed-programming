@@ -35,11 +35,15 @@ public class WebPage {
 		int numWords = 1 + random.nextInt(10);
 		String content = "";
 		for (int i = 0; i < numWords; i++)
+
 			content += "word" + (random.nextInt(5) + 1) + " ";
 		this.content = content;
+
 		// Fake wait for web-response.
 		try {
 			Thread.sleep(200);
+			System.out.println("Download");
+
 		}
 		catch (InterruptedException exception) {
 			System.out.println(exception);
