@@ -1,4 +1,4 @@
-
+package Inlup2;
 
 class Account {
 	// Instance variables.

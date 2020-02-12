@@ -8,6 +8,13 @@
             "type": "java",
             "name": "CodeLens (Launch) - Program",
             "request": "launch",
+            "mainClass": "Inlup3.Program",
+            "projectName": "Parallel and distributed programming_433fc55f"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Program",
+            "request": "launch",
             "mainClass": "Program",
             "projectName": "Parallel-and-distributed-programming_7bc3ddfa"
         },
