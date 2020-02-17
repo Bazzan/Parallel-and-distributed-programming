@@ -6,6 +6,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - Program3",
+            "request": "launch",
+            "mainClass": "Inlup3ProducerConsumerMyExecutor.Program3",
+            "projectName": "Parallel and distributed programming_433fc55f"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Program1",
+            "request": "launch",
+            "mainClass": "Inlup3ProducerConsumer.Program1",
+            "projectName": "Parallel and distributed programming_433fc55f"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - Program",
             "request": "launch",
             "mainClass": "Inlup3.Program",

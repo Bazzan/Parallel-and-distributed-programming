@@ -1,8 +1,8 @@
-// Peter Idestam-Almquist, 2020-02-04.
+// Sebastian Åkerlund, 2020-02-04.
 
 // [Do NOT modify this file.]
 // package paradis.assignment3;
-package Inlup3;
+package Inlup3ProducerConsumerMyExecutor;
 
 
 import java.util.Random;

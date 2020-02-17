@@ -2,7 +2,7 @@
 
 // [Do NOT modify this file.]
 // package paradis.assignment3;
-package Inlup3;
+package Inlup3ProducerConsumer;
 
 
 import java.util.Random;
