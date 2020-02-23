@@ -1,4 +1,4 @@
-// Peter Idestam-Almquist, 2017-03-10.
+//Sebastian Åkerlund
 // Server, multi-threaded, accepting several simultaneous clients.
 
 package Assignment4;
@@ -9,16 +9,11 @@ import java.net.SocketAddress;
 import java.io.PrintWriter;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 
 class ChatServer implements Runnable {
 	private final static int PORT = 8000;
@@ -29,21 +24,16 @@ class ChatServer implements Runnable {
 	private String clientName = "";
 	public PrintWriter socketWriter = null;
 
+	private static String allNames = "";
+
 	private ChatServer(Socket clientSocket) {
 		this.clientSocket = clientSocket;
 	}
 
-	// Map<Socket, PrintWriter> clients = new HashMap<Socket, PrintWriter>();
-	static LinkedList<Socket> sockets = new LinkedList<>();
-	static LinkedList<ChatServer> chatServers = new LinkedList<>();
-
-	LinkedList<PrintWriter> writers = new LinkedList<>();
+	// static LinkedList<ChatServer> chatServers = new LinkedList<>();
+	static CopyOnWriteArrayList<ChatServer> chatServers = new CopyOnWriteArrayList<>();
 
 	public static BlockingQueue<String> messageQueue = new ArrayBlockingQueue<String>(MAX_CLIENTS);
-
-	private Runnable message(String message) {
-		return () -> socketWriter.println(message);
-	}
 
 	public void run() {
 		SocketAddress remoteSocketAddress = clientSocket.getRemoteSocketAddress();
@@ -54,7 +44,6 @@ class ChatServer implements Runnable {
 		try {
 			socketWriter = new PrintWriter(clientSocket.getOutputStream(), true);
 			socketReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-			writers.add(socketWriter);
 
 			String threadInfo = " (" + Thread.currentThread().getName() + ").";
 			String inputLine = socketReader.readLine();
@@ -62,21 +51,29 @@ class ChatServer implements Runnable {
 
 			// First message is client name.
 			clientName = inputLine;
-
 			while (inputLine != null) {
+				if(inputLine.compareTo("exit")){
+					chatServers.remove(clientSocket);
+					clientSocket.close();
+				}
+
 				inputLine = clientName + ": " + inputLine;
 				messageQueue.put(inputLine);
 
 				System.out.println(
-						"Sent: \"" + inputLine + "\" to " + clientName + " " + remoteSocketAddress + threadInfo);
+						"Sent: \"" + inputLine + "\" to " + allNames + " " + remoteSocketAddress + threadInfo);
 
 				inputLine = socketReader.readLine();
+				allNames = "";
+				for (ChatServer chatServer : chatServers) {
+					allNames += chatServer.clientName + ", ";
+
+				}
 
 				System.out.println(
 						"Received: \"" + inputLine + "\" from " + clientName + " " + remoteSocketAddress + threadInfo);
 
-				// executor.execute(message(socketWriter, messageQueue.take()));
-				// socketWriter.println(inputLine);
+
 
 			}
 			System.out.println("Closing connection " + remoteSocketAddress + " (" + localSocketAddress + ").");
@@ -111,6 +108,7 @@ class ChatServer implements Runnable {
 
 						String message = queue.take();
 						for (ChatServer chatServer : chatServers) {
+
 							names += chatServer.clientName + ", ";
 
 							executor.execute(() -> {
@@ -119,10 +117,9 @@ class ChatServer implements Runnable {
 
 						}
 
-						System.out.println(names);
 
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
+						System.out.println(e);
 						e.printStackTrace();
 					}
 
@@ -147,7 +144,6 @@ class ChatServer implements Runnable {
 
 			while (true) {
 				clientSocket = serverSocket.accept();
-				sockets.add(clientSocket);
 				ChatServer chatServer = new ChatServer(clientSocket);
 				chatServers.add(chatServer);
 				executor.execute(chatServer);
