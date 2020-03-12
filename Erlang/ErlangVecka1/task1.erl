@@ -1,6 +1,5 @@
 -module(task1).
 
-% -compile(export_all).
 
 -export([eval/1, eval/2, ifTuple/1, map/2, filter/2, split/2]).
 
@@ -85,4 +84,3 @@ split(F,[H|T],True,False) ->
       split(F,T,True,[H|False])
     end.
 
-% lists:reverse(True), lists:reverse(False), {True,False};
