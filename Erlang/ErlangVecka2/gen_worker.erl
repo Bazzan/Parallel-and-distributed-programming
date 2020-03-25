@@ -12,16 +12,16 @@ start(Module,Max) ->
     % worker_loop([],Module),
     spawn_workers(Module,[],Max).
 
-worker_loop(State,Module) ->
-    receive
-        {From, Ref,Pids,{request, Work}}->
-            [Worker|Workers] = Pids,
-            case Module:handle_work(Work) of
-                {reply, NewState, Response} ->
-                    From ! {response,Ref,Response},
-                worker_loop(NewState,Module)
-            end
-        end.
+% worker_loop(State,Module) ->
+%     receive
+%         {From, Ref,Pids,{request, Work}}->
+%             [Worker|Workers] = Pids,
+%             case Module:handle_work(Work) of
+%                 {reply, NewState, Response} ->
+%                     From ! {response,Ref,Response},
+%                 worker_loop(NewState,Module)
+%             end
+%         end.
 
 call(Pid,Request) ->
     Ref = make_ref(),
@@ -44,12 +44,25 @@ await(One,Two) ->
 
 await_all(Refs) ->
 await_all.
-
+%fun (X) -> X*2 end, [1,2,3]
 async([Pid|WorkPool],Work) ->
-    Ref = make_ref(),
-    Pid ! {self(), Ref,Work}, % skicka vad? handle work...
-    lists:append(WorkPool, [Pid]),
+    
+     case Work of 
+         {F,L}  ->
+             Pid ! {BlaBla},
+             Ref = make_ref(),
+             lists:append(WorkPool, [Pid])
+
+
     Ref.
 
 stop(WorkPool) ->
     stop.
+
+worker(Module) ->
+    receive                         %work
+        {From,Ref,{request,Work}} ->
+            From ! {Ref,{reply ,Module:handle_work(Work)}},
+            worker(Module)
+end.
+
